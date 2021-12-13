@@ -15,3 +15,6 @@ buildNumber.properties
 **/.mvn
 **/target
 .idea
+**/application.yml
+./mail-search/src/main/java/com/cheng/mail/search/config/MailElasticSearchConfig.java
+**/application-dev.yml
