@@ -24,7 +24,7 @@ public class MailElasticSearchConfig {
     public RestHighLevelClient esRestClient(){
         RestHighLevelClient client = new RestHighLevelClient(
                 RestClient.builder(
-                        new HttpHost("XXX.XXX.XXX.XXX", 9200, "http")));
+                        new HttpHost("101.43.36.144", 9200, "http")));
         return client;
     }
 
