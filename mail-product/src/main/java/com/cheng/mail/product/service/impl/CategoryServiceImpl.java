@@ -82,15 +82,18 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public Map<String, List<Catelog2Vo>> getCatalogJson() {
-        List<CategoryEntity> level1Categorys = getLevel1Categorys();
+        List<CategoryEntity> selectList = baseMapper.selectList(null);
+        
+
+        List<CategoryEntity> level1Categorys = getParent_cid(selectList,0L);
 
         Map<String, List<Catelog2Vo>> parent_cid = level1Categorys.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
-            List<CategoryEntity> entities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", v.getCatId()));
+            List<CategoryEntity> entities = getParent_cid(selectList,v.getCatId());
             List<Catelog2Vo> catelog2Vos = null;
             if (entities != null) {
                 catelog2Vos = entities.stream().map(l2 -> {
                     Catelog2Vo catelog2Vo = new Catelog2Vo(v.getCatId().toString(), null, l2.getCatId().toString(), l2.getName());
-                    List<CategoryEntity> level3Catelog = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", l2.getCatId()));
+                    List<CategoryEntity> level3Catelog = getParent_cid(selectList,l2.getCatId());
                     if (level3Catelog!=null){
                         List<Catelog2Vo.Catelog3Vo> collect = level3Catelog.stream().map(l3 -> {
                             Catelog2Vo.Catelog3Vo catelog3Vo = new Catelog2Vo.Catelog3Vo(l2.getCatId().toString(), l3.getCatId().toString(), l3.getName());
@@ -104,6 +107,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             return catelog2Vos;
         }));
         return parent_cid;
+    }
+
+    private List<CategoryEntity> getParent_cid(List<CategoryEntity> selectList,Long parent_cid) {
+        List<CategoryEntity> collect = selectList.stream().filter(item -> item.getParentCid() == parent_cid).collect(Collectors.toList());
+        return collect;
     }
 
     private void findParentPath(Long catelogId,List<Long> paths){
