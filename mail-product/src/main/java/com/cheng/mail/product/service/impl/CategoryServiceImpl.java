@@ -1,8 +1,12 @@
 package com.cheng.mail.product.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.cheng.mail.product.service.CategoryBrandRelationService;
 import com.cheng.mail.product.vo.Catelog2Vo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,6 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
     @Autowired
     CategoryBrandRelationService categoryBrandRelationService;
+
+    @Autowired
+    StringRedisTemplate redisTemplate;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -80,8 +87,22 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return entities;
     }
 
+
     @Override
     public Map<String, List<Catelog2Vo>> getCatalogJson() {
+        String catalogJson = redisTemplate.opsForValue().get("catalogJson");
+        if (StringUtils.isEmpty(catalogJson)){
+            Map<String, List<Catelog2Vo>> catalogJsonFromDB = getCatalogJsonFromDB();
+            String jsonString = JSON.toJSONString(catalogJsonFromDB);
+            redisTemplate.opsForValue().set("catalogJson",jsonString);
+            return catalogJsonFromDB;
+        }
+        Map<String, List<Catelog2Vo>> res = JSON.parseObject(catalogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
+        });
+        return res;
+    }
+
+    public Map<String, List<Catelog2Vo>> getCatalogJsonFromDB() {
         List<CategoryEntity> selectList = baseMapper.selectList(null);
         
 

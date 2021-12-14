@@ -9,6 +9,8 @@ import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,6 +18,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+
 @Slf4j
 @SpringBootTest
 class MailProductApplicationTests
@@ -25,10 +29,15 @@ class MailProductApplicationTests
     @Autowired
     CategoryService categoryService;
 
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
+
     @Test
-    public void test(){
-        Long[] catelogPath = categoryService.findCatelogPath(229L);
-        log.info("完整路径:{}", Arrays.asList(catelogPath));
+    public void testRedis(){
+        ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
+        ops.set("hello","world_"+ UUID.randomUUID().toString());
+        String s = ops.get("hello");
+        System.out.println(s);
     }
 //    @Autowired
 //    OSSClient ossClient;
