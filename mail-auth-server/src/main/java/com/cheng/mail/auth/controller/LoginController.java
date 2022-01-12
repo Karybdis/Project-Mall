@@ -95,12 +95,23 @@ public class LoginController {
         }
     }
 
+    @GetMapping("/login.html")
+    public String loginPage(HttpSession session){
+        Object attribute = session.getAttribute(AuthServerConstant.LOGIN_USER);
+        if (attribute==null){
+            return "login";
+        }
+        else{
+            return "redirect:http://mall.com";
+        }
+    }
+
     @PostMapping("/login")
     public String login(UserLoginVo vo, RedirectAttributes redirectAttributes, HttpSession session){
         R login = memberFeignService.login(vo);
         if (login.getCode()==0){
             MemberRespVo data = login.getData("data", new TypeReference<MemberRespVo>() {});
-            session.setAttribute("loginUser",data);
+            session.setAttribute(AuthServerConstant.LOGIN_USER,data);
             return "redirect:http://mall.com";
         }
         else{
