@@ -3,13 +3,15 @@ package com.cheng.mail.member.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.cheng.common.exception.BizCodeEnume;
+import com.cheng.mail.member.exception.PhoneExistException;
+import com.cheng.mail.member.exception.UsernameExistException;
 import com.cheng.mail.member.feign.CouponFeignService;
+import com.cheng.mail.member.vo.MemberLoginVo;
+import com.cheng.mail.member.vo.MemberRegistVo;
+import com.cheng.mail.member.vo.SocialUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.cheng.mail.member.entity.MemberEntity;
 import com.cheng.mail.member.service.MemberService;
@@ -43,6 +45,43 @@ public class MemberController {
 
         return R.ok().put("member",memberEntity).put("coupons",memberCoupons.get("coupons"));
 
+    }
+
+    @PostMapping("/regist")
+    public R regist(@RequestBody MemberRegistVo vo){
+        try {
+            memberService.regist(vo);
+        }
+        catch (PhoneExistException e){
+            return R.error(BizCodeEnume.PHONE_EXIST_EXCEPTION.getCode(),BizCodeEnume.PHONE_EXIST_EXCEPTION.getMessage());
+        }
+        catch(UsernameExistException e){
+            return R.error(BizCodeEnume.USER_EXIST_EXCEPTION.getCode(),BizCodeEnume.USER_EXIST_EXCEPTION.getMessage());
+        }
+
+        return R.ok();
+    }
+
+    @PostMapping("/oauth2/login")
+    public R oauthlogin(@RequestBody SocialUser socialUser){
+        MemberEntity memberEntity= memberService.login(socialUser);
+        if (memberEntity!=null){
+            return R.ok().setData(memberEntity);
+        }
+        else{
+            return R.error(BizCodeEnume.LOGINACCT_PASSWORD_INVALID_EXCEPTION.getCode(), BizCodeEnume.LOGINACCT_PASSWORD_INVALID_EXCEPTION.getMessage());
+        }
+    }
+
+    @PostMapping("/login")
+    public R login(@RequestBody MemberLoginVo vo){
+        MemberEntity memberEntity= memberService.login(vo);
+        if (memberEntity!=null){
+            return R.ok().setData(memberEntity);
+        }
+        else{
+            return R.error(BizCodeEnume.LOGINACCT_PASSWORD_INVALID_EXCEPTION.getCode(), BizCodeEnume.LOGINACCT_PASSWORD_INVALID_EXCEPTION.getMessage());
+        }
     }
 
     /**

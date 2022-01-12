@@ -3,6 +3,8 @@ package com.cheng.mail.product.service.impl;
 import com.cheng.mail.product.entity.AttrEntity;
 import com.cheng.mail.product.service.AttrService;
 import com.cheng.mail.product.vo.AttrGroupWithAttrsVo;
+import com.cheng.mail.product.vo.SkuItemVo;
+import com.cheng.mail.product.vo.SpuItemAttrGroupVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,5 +72,11 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             return attrGroupWithAttrsVo;
         }).collect(Collectors.toList());
         return collect;
+    }
+
+    @Override
+    public List<SpuItemAttrGroupVo> getAttrGroupWithAttrsBySpuId(Long spuId, Long catalogId) {
+        List<SpuItemAttrGroupVo> vos=baseMapper.getAttrGroupWithAttrsBySpuId(spuId,catalogId);
+        return vos;
     }
 }

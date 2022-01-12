@@ -1,12 +1,20 @@
 package com.cheng.mail.product;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cheng.mail.product.dao.AttrGroupDao;
+import com.cheng.mail.product.dao.SkuSaleAttrValueDao;
 import com.cheng.mail.product.entity.BrandEntity;
 import com.cheng.mail.product.service.BrandService;
 import com.cheng.mail.product.service.CategoryService;
+import com.cheng.mail.product.service.SkuSaleAttrValueService;
+import com.cheng.mail.product.vo.SkuItemSaleAttrVo;
+import com.cheng.mail.product.vo.SpuItemAttrGroupVo;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.RLock;
+import org.redisson.api.RReadWriteLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -15,10 +23,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @SpringBootTest
@@ -32,12 +37,19 @@ class MailProductApplicationTests
     @Autowired
     StringRedisTemplate stringRedisTemplate;
 
+    @Autowired
+    RedissonClient redissonClient;
+
+    @Autowired
+    AttrGroupDao attrGroupDao;
+
+    @Autowired
+    SkuSaleAttrValueDao skuSaleAttrValueDao;
+
     @Test
-    public void testRedis(){
-        ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
-        ops.set("hello","world_"+ UUID.randomUUID().toString());
-        String s = ops.get("hello");
-        System.out.println(s);
+    public void test(){
+        List<SkuItemSaleAttrVo> saleAttrsBySpuId = skuSaleAttrValueDao.getSaleAttrsBySpuId(13L);
+        System.out.println(saleAttrsBySpuId);
     }
 //    @Autowired
 //    OSSClient ossClient;

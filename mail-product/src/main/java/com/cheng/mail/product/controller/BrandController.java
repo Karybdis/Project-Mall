@@ -2,6 +2,7 @@ package com.cheng.mail.product.controller;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.cheng.common.valid.AddGroup;
@@ -9,11 +10,7 @@ import com.cheng.common.valid.UpdateGroup;
 import com.cheng.common.valid.UpdateStatusGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.cheng.mail.product.entity.BrandEntity;
 import com.cheng.mail.product.service.BrandService;
@@ -55,6 +52,12 @@ public class BrandController {
 		BrandEntity brand = brandService.getById(brandId);
 
         return R.ok().put("brand", brand);
+    }
+
+    @GetMapping("/infos")
+    public R info(@RequestParam("brandIds") List<Long> brandIds) {
+        List<BrandEntity> brands= brandService.getBrandsByIds(brandIds);
+        return R.ok().put("brand",brands);
     }
 
     /**

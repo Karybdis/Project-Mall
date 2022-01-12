@@ -4,6 +4,7 @@
 package com.cheng.mail.product.vo;
 
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * Auto-generated: 2021-12-03 21:13:1
@@ -12,6 +13,7 @@ import lombok.Data;
  * @website http://www.bejson.com/java2pojo/
  */
 
+@ToString
 @Data
 public class Attr {
 
